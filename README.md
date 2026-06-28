@@ -1,12 +1,14 @@
 # ⚡ TechCart — B2C Electronics Store
+
 A full-stack B2C e-commerce application for electronics built with **ASP.NET Core 8 Web API** and **React + Vite + TailwindCSS**. Features JWT authentication, shopping cart, order management, product reviews, and a complete admin dashboard.
 
 ---
 
 ## 🖥️ Live Demo
 
-> Frontend: 
-> Backend API: 
+- **Frontend:** https://tech-cart-omega.vercel.app
+- **Backend:** Runs locally via Docker (see setup below)
+- **API Docs:** http://localhost:5144/swagger
 
 ---
 
@@ -58,7 +60,7 @@ A full-stack B2C e-commerce application for electronics built with **ASP.NET Cor
 ### Infrastructure
 | Tool | Purpose |
 |------|---------|
-| Docker | Runs SQL Server locally on Mac/Linux |
+| Docker Desktop | Runs SQL Server 2022 locally |
 | Git | Version control |
 
 ---
@@ -69,7 +71,7 @@ A full-stack B2C e-commerce application for electronics built with **ASP.NET Cor
 TechCart/
 ├── backend/
 │   └── TechCartAPI/
-│       ├── Controllers/          # API endpoints
+│       ├── Controllers/
 │       │   ├── AuthController.cs
 │       │   ├── ProductsController.cs
 │       │   ├── CategoriesController.cs
@@ -78,14 +80,14 @@ TechCart/
 │       │   ├── OrdersController.cs
 │       │   └── ReviewsController.cs
 │       ├── Data/
-│       │   └── TechCartContext.cs  # EF Core DbContext + seed data
-│       ├── DTOs/                   # Data Transfer Objects
+│       │   └── TechCartContext.cs
+│       ├── DTOs/
 │       │   ├── AuthDTOs.cs
 │       │   ├── ProductDTOs.cs
 │       │   ├── CartDTOs.cs
 │       │   ├── OrderDTOs.cs
 │       │   └── ReviewDTOs.cs
-│       ├── Models/                 # Entity classes
+│       ├── Models/
 │       │   ├── User.cs
 │       │   ├── Product.cs
 │       │   ├── Category.cs
@@ -95,10 +97,10 @@ TechCart/
 │       │   ├── CartItem.cs
 │       │   └── Review.cs
 │       ├── Services/
-│       │   └── TokenService.cs     # JWT token generation
-│       ├── Migrations/             # EF Core migrations
-│       ├── appsettings.json        # Configuration
-│       └── Program.cs              # App entry point
+│       │   └── TokenService.cs
+│       ├── Migrations/
+│       ├── appsettings.json
+│       └── Program.cs
 └── frontend/
     └── src/
         ├── components/
@@ -107,8 +109,8 @@ TechCart/
         │   ├── ProductCard.jsx
         │   └── LoadingSpinner.jsx
         ├── context/
-        │   ├── AuthContext.jsx     # Global auth state
-        │   └── CartContext.jsx     # Global cart state
+        │   ├── AuthContext.jsx
+        │   └── CartContext.jsx
         ├── pages/
         │   ├── HomePage.jsx
         │   ├── ProductsPage.jsx
@@ -119,8 +121,8 @@ TechCart/
         │   ├── OrdersPage.jsx
         │   └── AdminPage.jsx
         ├── services/
-        │   └── api.js              # Axios API service layer
-        └── App.jsx                 # Routes and providers
+        │   └── api.js
+        └── App.jsx
 ```
 
 ---
@@ -128,19 +130,19 @@ TechCart/
 ## 🗄️ Database Schema
 
 ```
-Users ──────────────────────────────────────────────────────┐
-│ UserId, FirstName, LastName, Email, PasswordHash, Role     │
-└──────────────────────────────────────────────────────────┘
-         │                           │
-         │ 1:N                       │ 1:N
-         ▼                           ▼
-      Orders                      CartItems ──── Products
-         │                                           │
-         │ 1:N                                       │
-         ▼                                     ┌─────┴──────┐
-      OrderItems ──── Products            Categories    Brands
-                                               │
-                                          Reviews ──── Users
+Users
+│ UserId, FirstName, LastName, Email, PasswordHash, Role
+│
+├── 1:N ──► Orders
+│              │
+│              └── 1:N ──► OrderItems ──► Products
+│
+├── 1:N ──► CartItems ──► Products
+│
+└── 1:N ──► Reviews ──► Products
+                              │
+                         ├── Categories
+                         └── Brands
 ```
 
 ### Tables
@@ -151,11 +153,11 @@ Users ────────────────────────�
 - **Orders** — customer orders with status tracking
 - **OrderItems** — line items per order
 - **CartItems** — persistent shopping cart per user
-- **Reviews** — product reviews with 1-5 star ratings
+- **Reviews** — product reviews with 1–5 star ratings
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Local Setup
 
 ### Prerequisites
 
@@ -175,10 +177,9 @@ cd TechCart
 
 ---
 
-### 2. Set Up SQL Server (via Docker)
+### 2. Start SQL Server via Docker
 
 ```bash
-# Pull and run SQL Server 2022
 docker run -e "ACCEPT_EULA=Y" \
   -e "MSSQL_SA_PASSWORD=Train1234Abc" \
   -p 1433:1433 \
@@ -189,50 +190,65 @@ docker run -e "ACCEPT_EULA=Y" \
 docker ps
 ```
 
+> On subsequent runs, just use: `docker start sqlserver2022`
+
 ---
 
-### 3. Run the Backend
+### 3. Configure Backend
+
+Open `backend/TechCartAPI/appsettings.json` and set:
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=127.0.0.1,1433;Database=TechCartDB;User Id=SA;Password=Train1234Abc;TrustServerCertificate=True;"
+  },
+  "Jwt": {
+    "Key": "TechCart$SecretKey2024!XyZ@SuperSecure#123",
+    "Issuer": "TechCartAPI",
+    "Audience": "TechCartClient",
+    "ExpiryInMinutes": 60
+  }
+}
+```
+
+---
+
+### 4. Run the Backend
 
 ```bash
 cd backend/TechCartAPI
 
-# Restore packages
-dotnet restore
-
-# Install EF Core CLI (if not already installed)
+# Install EF Core CLI (first time only)
 dotnet tool install --global dotnet-ef
 
-# Apply migrations and seed database
+# Apply migrations — creates tables and seeds data automatically
 dotnet ef database update
 
-# Run the API
+# Start the API
 dotnet run
 ```
 
-API will start at: `http://localhost:5144`
-Swagger UI: `http://localhost:5144/swagger`
+- API: `http://localhost:5144`
+- Swagger UI: `http://localhost:5144/swagger`
 
 ---
 
-### 4. Run the Frontend
+### 5. Run the Frontend
 
 ```bash
 cd frontend
-
-# Install dependencies
 npm install
-
-# Start development server
 npm run dev
 ```
 
-Frontend will start at: `http://localhost:5173`
+- App: `http://localhost:5173`
 
 ---
 
-### 5. Create Admin User
+### 6. Create Admin User
 
-After registering an account, promote it to Admin:
+Register an account on the app first, then run:
 
 ```bash
 docker exec -it sqlserver2022 /opt/mssql-tools18/bin/sqlcmd \
@@ -240,7 +256,7 @@ docker exec -it sqlserver2022 /opt/mssql-tools18/bin/sqlcmd \
   -Q "USE TechCartDB; UPDATE Users SET Role = 'Admin' WHERE Email = 'your@email.com';"
 ```
 
-Log out and log back in to see the Admin panel.
+Log out and log back in — the Admin link will appear in the navbar.
 
 ---
 
@@ -283,7 +299,7 @@ Log out and log back in to see the Admin panel.
 |--------|----------|-------------|------|
 | GET | `/api/orders` | Get my orders | 🔐 User |
 | GET | `/api/orders/{id}` | Get order by ID | 🔐 User |
-| POST | `/api/orders` | Place order from cart | 🔐 User |
+| POST | `/api/orders` | Place order | 🔐 User |
 | PUT | `/api/orders/{id}/status` | Update order status | 🔐 Admin |
 | GET | `/api/orders/admin/all` | Get all orders | 🔐 Admin |
 
@@ -296,61 +312,35 @@ Log out and log back in to see the Admin panel.
 
 ---
 
-## ⚙️ Configuration
-
-### Backend — `appsettings.json`
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=127.0.0.1,1433;Database=TechCartDB;User Id=SA;Password=YOUR_PASSWORD;TrustServerCertificate=True;"
-  },
-  "Jwt": {
-    "Key": "YourSuperSecretKeyHere",
-    "Issuer": "TechCartAPI",
-    "Audience": "TechCartClient",
-    "ExpiryInMinutes": 60
-  }
-}
-```
-
-### Frontend — `src/services/api.js`
-
-```js
-const API_BASE = 'http://localhost:5144/api'; // change for production
-```
-
----
-
 ## 🔐 Authentication Flow
 
 ```
-User submits login credentials
+User submits credentials
         ↓
 Backend validates email + BCrypt password hash
         ↓
-JWT token generated with claims (userId, email, role)
+JWT token generated with userId, email, role claims
         ↓
 Token returned to frontend
         ↓
 Frontend stores token in localStorage
         ↓
-All subsequent requests include: Authorization: Bearer {token}
+Every request sends: Authorization: Bearer {token}
         ↓
-Backend validates token on every protected endpoint
+Backend validates token on protected endpoints
 ```
 
 ---
 
 ## 🌱 Seed Data
 
-The database is pre-seeded with:
+Pre-loaded on first run:
 
-**Categories:** Smartphones, Laptops, Audio, Tablets, Accessories
+**Categories:** Smartphones · Laptops · Audio · Tablets · Accessories
 
-**Brands:** Apple, Samsung, Sony, Dell, OnePlus, Bose
+**Brands:** Apple · Samsung · Sony · Dell · OnePlus · Bose
 
-**Products (10):**
+**Products:**
 | Product | Brand | Price |
 |---------|-------|-------|
 | iPhone 15 Pro | Apple | ₹1,34,900 |
@@ -369,43 +359,35 @@ The database is pre-seeded with:
 ## 🧠 Key Design Decisions
 
 **Why DTOs?**
-Entity models are never exposed directly to the API. DTOs control exactly what data goes in and out — prevents over-posting, sensitive data leakage, and circular reference issues.
+Entity models are never exposed directly to the API. DTOs control exactly what data goes in and out — prevents over-posting and sensitive data leakage.
 
 **Why Soft Delete?**
-Products are never hard-deleted. Setting `IsActive = false` preserves order history integrity — you can't delete a product that exists in past orders.
+Products are never hard-deleted. Setting `IsActive = false` preserves order history — you cannot delete a product that exists in past orders.
 
 **Why JWT over Sessions?**
-JWT is stateless — the server doesn't store session data. Scales better, works across multiple servers, and is the industry standard for REST APIs.
+JWT is stateless — the server stores nothing. Scales across multiple servers and is the industry standard for REST APIs.
 
 **Why EF Core over raw SQL?**
-Type safety, migration management, LINQ queries, and faster development. Raw SQL is used only when EF Core queries are insufficient.
+Type safety, migration management, and LINQ queries. Raw SQL is available via `FromSqlRaw` when needed.
 
 ---
 
-## 📝 Environment Variables (Production)
-
-For production deployment, use environment variables instead of appsettings.json:
+## ⚡ Daily Startup
 
 ```bash
-# Backend
-CONNECTIONSTRINGS__DEFAULTCONNECTION="Server=...;Database=TechCartDB;..."
-JWT__KEY="YourProductionSecretKey"
-JWT__ISSUER="TechCartAPI"
-JWT__AUDIENCE="TechCartClient"
+# 1. Open Docker Desktop and wait for whale icon
 
-# Frontend (.env)
-VITE_API_BASE=https://your-api-url.com/api
+# 2. Start SQL Server
+docker start sqlserver2022
+
+# 3. Start backend (Terminal 1)
+cd backend/TechCartAPI
+dotnet run
+
+# 4. Start frontend (Terminal 2)
+cd frontend
+npm run dev
 ```
-
----
-
-## 🚢 Deployment
-
-### Backend → Railway / Azure App Service
-### Frontend → Vercel
-### Database → Azure SQL / Railway PostgreSQL
-
-See [Deployment Guide](#) for step-by-step instructions.
 
 ---
 
@@ -415,7 +397,7 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-## Acknowledgements
+## 🙏 Acknowledgements
 
 - [Microsoft ASP.NET Core Documentation](https://docs.microsoft.com/aspnet/core)
 - [Entity Framework Core Documentation](https://docs.microsoft.com/ef/core)
