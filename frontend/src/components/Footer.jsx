@@ -33,13 +33,13 @@ export default function Footer() {
             <h4 className="text-white font-semibold mb-4">Support</h4>
             <ul className="space-y-2 text-sm">
               <li><span className="text-gray-400">support@techcart.in</span></li>
-              <li><span className="text-gray-400">1800-123-4567</span></li>
+              <li><span className="text-gray-400">1000-123-4567</span></li>
               <li><span className="text-gray-400">Mon-Sat 9AM-6PM</span></li>
             </ul>
           </div>
         </div>
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-500">
-          © 2024 TechCart. All rights reserved.
+          © {new Date().getFullYear()} TechCart. All rights reserved.
         </div>
       </div>
     </footer>
