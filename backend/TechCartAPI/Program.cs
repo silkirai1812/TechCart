@@ -17,8 +17,8 @@ builder.Services.AddDbContext<TechCartContext>(options =>
 builder.Services.AddScoped<TokenService>();
 
 // ── JWT Auth ─────────────────────────────────────────────
-var jwtKey      = builder.Configuration["Jwt:Key"]!;
-var jwtIssuer   = builder.Configuration["Jwt:Issuer"]!;
+var jwtKey = builder.Configuration["Jwt:Key"]!;
+var jwtIssuer = builder.Configuration["Jwt:Issuer"]!;
 var jwtAudience = builder.Configuration["Jwt:Audience"]!;
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -26,13 +26,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer           = true,
-            ValidateAudience         = true,
-            ValidateLifetime         = true,
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer              = jwtIssuer,
-            ValidAudience            = jwtAudience,
-            IssuerSigningKey         = new SymmetricSecurityKey(
+            ValidIssuer = jwtIssuer,
+            ValidAudience = jwtAudience,
+            IssuerSigningKey = new SymmetricSecurityKey(
                                            Encoding.UTF8.GetBytes(jwtKey))
         };
     });
@@ -43,9 +43,13 @@ builder.Services.AddAuthorization();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact", policy =>
-        policy.WithOrigins("http://localhost:5173", "http://localhost:3000")
-              .AllowAnyHeader()
-              .AllowAnyMethod());
+        policy.WithOrigins(
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "https://tech-cart-omega.vercel.app"
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod());
 });
 
 // ── Swagger ───────────────────────────────────────────────
@@ -55,17 +59,17 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title   = "TechCart API",
+        Title = "TechCart API",
         Version = "v1",
         Description = "B2C Electronics Store API"
     });
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "Enter: Bearer {token}",
-        Name        = "Authorization",
-        In          = ParameterLocation.Header,
-        Type        = SecuritySchemeType.ApiKey,
-        Scheme      = "Bearer"
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
     });
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {

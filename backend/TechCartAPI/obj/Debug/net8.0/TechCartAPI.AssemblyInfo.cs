@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TechCartAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+32070287a1e4d10d93f0b5f7e65f5e436884fe2e")]
 [assembly: System.Reflection.AssemblyProductAttribute("TechCartAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TechCartAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
