@@ -1,0 +1,21 @@
+# .NET
+**/bin/
+**/obj/
+**/*.user
+**/appsettings.Development.json
+*.db
+
+# Node
+**/node_modules/
+**/dist/
+**/.env
+**/.env.local
+
+# Mac
+.DS_Store
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/
