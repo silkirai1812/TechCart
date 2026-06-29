@@ -136,3 +136,4 @@
 /Users/silkirai/Desktop/b2cStore.NET/TechCart/backend/TechCartAPI/obj/Debug/net8.0/TechCartAPI.pdb
 /Users/silkirai/Desktop/b2cStore.NET/TechCart/backend/TechCartAPI/obj/Debug/net8.0/TechCartAPI.genruntimeconfig.cache
 /Users/silkirai/Desktop/b2cStore.NET/TechCart/backend/TechCartAPI/obj/Debug/net8.0/ref/TechCartAPI.dll
+/Users/silkirai/Desktop/b2cStore.NET/TechCart/backend/TechCartAPI/obj/Debug/net8.0/TechCartAPI.sourcelink.json

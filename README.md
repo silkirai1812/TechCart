@@ -12,6 +12,25 @@ A full-stack B2C e-commerce application for electronics built with **ASP.NET Cor
 
 ---
 
+## 📸 Screenshots
+
+### Home Page
+![Home Page](screenshots/homepage.png)
+
+### Products Page
+![Products Page](screenshots/products.png)
+
+### Product Detail
+![Product Detail](screenshots/product-detail.png)
+
+### Shopping Cart
+![Cart](screenshots/cart.png)
+
+### Admin Dashboard
+![Admin Dashboard](screenshots/admin-dashboard.png)
+
+---
+
 ## ✨ Features
 
 ### Customer Features
